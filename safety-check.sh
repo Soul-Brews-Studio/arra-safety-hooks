@@ -39,6 +39,42 @@ if echo "$CMD" | grep -qE 'git\s+commit\s+.*--amend'; then
   exit 2
 fi
 
+# Block git checkout -- (discards uncommitted changes)
+if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*git\s+checkout\s+--\s'; then
+  echo "BLOCKED: git checkout -- discards changes. Use git stash instead." >&2
+  exit 2
+fi
+
+# Block git restore . (discards all uncommitted changes)
+if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*git\s+restore\s+\.'; then
+  echo "BLOCKED: git restore . discards all changes. Use git stash instead." >&2
+  exit 2
+fi
+
+# Block git clean -f (deletes untracked files permanently)
+if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*git\s+clean\s+.*-[a-zA-Z]*f'; then
+  echo "BLOCKED: git clean -f deletes untracked files permanently. Move to /tmp instead." >&2
+  exit 2
+fi
+
+# Block git branch -D (force delete branch — Nothing is Deleted)
+if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*git\s+branch\s+-D\s'; then
+  echo "BLOCKED: git branch -D force-deletes branch. Use -d (safe delete) instead." >&2
+  exit 2
+fi
+
+# Block git stash drop/clear (loses stashed work)
+if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*git\s+stash\s+(drop|clear)'; then
+  echo "BLOCKED: git stash drop/clear loses work. Nothing is Deleted." >&2
+  exit 2
+fi
+
+# Block --no-verify (skips pre-commit hooks — bypasses safety)
+if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*git\s+(commit|push)\s+.*--no-verify'; then
+  echo "BLOCKED: --no-verify skips safety hooks. Fix the hook issue instead." >&2
+  exit 2
+fi
+
 # Block gh pr merge (DISABLED - local project hook handles this for worktree agents)
 # Main agent CAN merge after explicit user approval
 # if echo "$CMD" | grep -qE 'gh\s+pr\s+merge'; then

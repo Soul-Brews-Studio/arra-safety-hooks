@@ -14,6 +14,12 @@ Claude Code safety hooks — enforcement over documentation.
 | `git reset --hard` | Irreversible |
 | `git commit --amend` | Breaks multi-agent hash sync |
 | `git push origin main` | Always branch + PR |
+| `git checkout -- .` | Use `git stash` instead |
+| `git restore .` | Use `git stash` instead |
+| `git clean -f` | Deletes untracked files permanently |
+| `git branch -D` | Use `-d` (safe delete) instead |
+| `git stash drop` / `clear` | Nothing is Deleted |
+| `--no-verify` on commit/push | Fix the hook, don't skip it |
 | `gh pr create` to foreign orgs | Ownership check |
 
 ## Install
