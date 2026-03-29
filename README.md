@@ -22,6 +22,21 @@ Claude Code safety hooks — enforcement over documentation.
 | `--no-verify` on commit/push | Fix the hook, don't skip it |
 | `gh pr create` to foreign orgs | Ownership check |
 
+### Beta rules (opt-in)
+
+| Pattern | Why | Toggle |
+|---------|-----|--------|
+| `tmux send-keys` | Use `maw hey` instead | `touch /tmp/arra-safety-beta-on` |
+| `bun run src/cli.ts` | Use installed `maw` binary | `rm /tmp/arra-safety-beta-on` to disable |
+
+```bash
+# Enable beta rules
+touch /tmp/arra-safety-beta-on
+
+# Disable beta rules
+rm /tmp/arra-safety-beta-on
+```
+
 ## Install
 
 ```bash

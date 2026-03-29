@@ -4,6 +4,25 @@
 
 CMD=$(jq -r '.tool_input.command // ""' 2>/dev/null)
 
+# === BETA RULES ===
+# Toggle: touch /tmp/arra-safety-beta-on  → enable beta rules
+#         rm /tmp/arra-safety-beta-on     → disable beta rules
+BETA=false; [ -f /tmp/arra-safety-beta-on ] && BETA=true
+
+if $BETA; then
+  # Block raw tmux send-keys — use maw hey instead
+  if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*tmux\s+send-keys'; then
+    echo "BLOCKED: Never use raw tmux send-keys. Use 'maw hey <window>' instead." >&2
+    exit 2
+  fi
+
+  # Block bun run src/cli.ts — use installed maw binary
+  if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*bun\s+(run\s+)?.*src/cli\.ts'; then
+    echo "BLOCKED: Never run maw via bun. Use 'maw install' then the maw binary." >&2
+    exit 2
+  fi
+fi
+
 # Block dangerous patterns - be specific to avoid false positives
 # Only block commands at START of line/command (not in text body, heredoc, echo, etc.)
 # Patterns: start of string, after ;, after &&, after ||, after newline
