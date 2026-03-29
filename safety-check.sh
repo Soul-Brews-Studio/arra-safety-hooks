@@ -39,6 +39,11 @@ if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*(git|npm|yarn|pnpm)\s+[a-z]+\s+.*(\s-
   echo "BLOCKED: Force flags not allowed (including --force-with-lease). Use git pull --no-rebase + merge." >&2
   exit 2
 fi
+# Also catch -f immediately after subcommand (git push -f)
+if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*(git|npm|yarn|pnpm)\s+[a-z]+\s+-f(\s|$)'; then
+  echo "BLOCKED: Force flag -f not allowed. Nothing is Deleted." >&2
+  exit 2
+fi
 
 # Block reset --hard
 if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*git\s+reset\s+--hard'; then
