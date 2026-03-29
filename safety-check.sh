@@ -12,14 +12,34 @@ BETA=false; [ -f /tmp/arra-safety-beta-on ] && BETA=true
 if $BETA; then
   # Block raw tmux send-keys — use maw hey instead
   if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*tmux\s+send-keys'; then
-    echo "BLOCKED: Never use raw tmux send-keys. Use 'maw hey <window>' instead." >&2
+    echo "BLOCKED: Never use raw tmux send-keys." >&2
+    echo "" >&2
+    echo "Use maw-js instead:" >&2
+    echo "  maw hey <window> \"message\"  — send message to agent" >&2
+    echo "  maw peek <window>           — view agent output" >&2
+    echo "  maw ls                      — list sessions" >&2
+    echo "  maw spawn <name>            — create new agent" >&2
+    echo "  maw a <window>              — attach to session" >&2
+    echo "" >&2
+    echo "Missing a maw command? Create an issue:" >&2
+    echo "  gh issue create --repo Soul-Brews-Studio/maw-js --title 'feat: maw <command>'" >&2
     exit 2
   fi
 
   # Block bun src/cli.ts / bun run src/cli.ts — use installed maw binary
   # Allow: bun build, bun test, bun install, bun link (legitimate build commands)
   if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*bun\s+(run\s+)?src/cli\.ts'; then
-    echo "BLOCKED: Never run maw via bun. Use 'maw install' then the maw binary." >&2
+    echo "BLOCKED: Never run maw via bun src/cli.ts." >&2
+    echo "" >&2
+    echo "Install maw globally first:" >&2
+    echo "  cd ~/Code/github.com/Soul-Brews-Studio/maw-js && bun link" >&2
+    echo "" >&2
+    echo "Then use the maw binary:" >&2
+    echo "  maw hey <window> \"message\"" >&2
+    echo "  maw ls / maw peek / maw spawn" >&2
+    echo "" >&2
+    echo "Need a new feature? Create an issue:" >&2
+    echo "  gh issue create --repo Soul-Brews-Studio/maw-js --title 'feat: ...'" >&2
     exit 2
   fi
 fi
