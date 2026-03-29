@@ -26,9 +26,9 @@ if $BETA; then
     exit 2
   fi
 
-  # Block bun src/cli.ts / bun run src/cli.ts — use installed maw binary
+  # Block bun src/cli.ts and bun src/server.ts — use maw binary
   # Allow: bun build, bun test, bun install, bun link (legitimate build commands)
-  if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*bun\s+(run\s+)?src/cli\.ts'; then
+  if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*bun\s+(run\s+)?src/(cli|server)\.ts'; then
     echo "BLOCKED: Never run maw via bun src/cli.ts." >&2
     echo "" >&2
     echo "Install maw globally first:" >&2
