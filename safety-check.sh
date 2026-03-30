@@ -45,9 +45,16 @@ if $BETA; then
   # Warn on localhost — prefer hostname (white.wg, mba.wg, etc.)
   HOSTNAME=$(hostname -s 2>/dev/null || echo "")
   if echo "$CMD" | grep -qE 'localhost|127\.0\.0\.1'; then
-    echo "⚠ WARNING: Using localhost — consider using ${HOSTNAME}.wg or $(hostname -f 2>/dev/null || echo 'hostname') instead." >&2
+    echo "⚠ WARNING: Using localhost — consider using ${HOSTNAME}.wg instead." >&2
     echo "  localhost doesn't work cross-machine. Use WireGuard hostnames for fleet access." >&2
     # Warning only — don't block (exit 0 continues)
+  fi
+  # Warn on .local — suggest .wg fallback if unreachable
+  if echo "$CMD" | grep -qE '[a-z]+\.local[:/]'; then
+    HOST=$(echo "$CMD" | grep -oE '[a-z]+\.local' | head -1)
+    WG_HOST="${HOST%.local}.wg"
+    echo "⚠ NOTE: Using ${HOST} — if unreachable, try ${WG_HOST} (WireGuard)." >&2
+    # Warning only — don't block
   fi
 fi
 
