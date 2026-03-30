@@ -10,8 +10,8 @@ CMD=$(jq -r '.tool_input.command // ""' 2>/dev/null)
 BETA=false; [ -f /tmp/arra-safety-beta-on ] && BETA=true
 
 if $BETA; then
-  # Block raw tmux send-keys — use maw hey instead
-  if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*tmux\s+send-keys'; then
+  # Block raw tmux commands — use maw instead
+  if echo "$CMD" | grep -qE '(^|;|&&|\|\|)\s*tmux\s+(send-keys|list-windows|list-sessions|capture-pane|select-window|new-window)'; then
     echo "BLOCKED: Never use raw tmux send-keys." >&2
     echo "" >&2
     echo "Use maw-js instead:" >&2
