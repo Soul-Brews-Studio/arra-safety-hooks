@@ -42,6 +42,13 @@ if $BETA; then
     echo "  gh issue create --repo Soul-Brews-Studio/maw-js --title 'feat: ...'" >&2
     exit 2
   fi
+  # Warn on localhost — prefer hostname (white.wg, mba.wg, etc.)
+  HOSTNAME=$(hostname -s 2>/dev/null || echo "")
+  if echo "$CMD" | grep -qE 'localhost|127\.0\.0\.1'; then
+    echo "⚠ WARNING: Using localhost — consider using ${HOSTNAME}.wg or $(hostname -f 2>/dev/null || echo 'hostname') instead." >&2
+    echo "  localhost doesn't work cross-machine. Use WireGuard hostnames for fleet access." >&2
+    # Warning only — don't block (exit 0 continues)
+  fi
 fi
 
 # Block dangerous patterns - be specific to avoid false positives
