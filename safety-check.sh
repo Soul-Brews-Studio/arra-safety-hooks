@@ -58,6 +58,21 @@ if $BETA; then
   fi
 fi
 
+# === Exempt body-bearing gh subcommands (see issue #1) ===
+# `gh issue|pr|gist|release create|comment|edit` accepts a --body / heredoc
+# whose text frequently documents destructive commands (rm -rf, --force, etc.).
+# Those patterns aren't executed — they're documentation. Skip checks when the
+# command is ONLY the gh form, not chained with `;`, `&&`, `||` at the shell
+# level. We strip quoted strings before the chain check so `--title "x && y"`
+# doesn't trip the chain detector.
+FIRST_LINE=$(printf '%s\n' "$CMD" | head -n 1)
+if echo "$FIRST_LINE" | grep -qE '^\s*(rtk\s+)?gh\s+(issue|pr|gist|release)\s+(create|comment|edit)\b'; then
+  CLEAN_FIRST=$(echo "$FIRST_LINE" | sed -E 's/"[^"]*"/Q/g; s/'\''[^'\'']*'\''/Q/g')
+  if ! echo "$CLEAN_FIRST" | grep -qE '(;|&&|\|\|)'; then
+    exit 0
+  fi
+fi
+
 # Block dangerous patterns - be specific to avoid false positives
 # Only block commands at START of line/command (not in text body, heredoc, echo, etc.)
 # Patterns: start of string, after ;, after &&, after ||, after newline
