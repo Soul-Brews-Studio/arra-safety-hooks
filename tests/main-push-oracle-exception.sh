@@ -32,6 +32,10 @@ if [ -z "$TMP_ROOT" ] || ! echo "$TMP_ROOT" | grep -qE '^/tmp/'; then
   echo "Refusing to delete unexpected TMP_ROOT: '$TMP_ROOT'"
   exit 1
 fi
+cleanup() {
+  rm -rf "$TMP_ROOT"
+}
+trap cleanup EXIT
 rm -rf "$TMP_ROOT"
 mkdir -p "$TMP_ROOT/non-oracle" "$TMP_ROOT/oracle" "$TMP_ROOT/no-origin"
 
