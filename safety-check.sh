@@ -87,8 +87,13 @@ fi
 
 # Block direct push to main
 if echo "$CMD" | grep -qE 'git\s+push\s+(origin\s+)?main(\s|$)'; then
-  echo "BLOCKED: Never push directly to main. Use alpha branch + PR." >&2
-  exit 2
+  ORIGIN_URL=$(git config --get remote.origin.url 2>/dev/null || echo "")
+  REPO_NAME=$(basename "$ORIGIN_URL")
+  REPO_NAME="${REPO_NAME%.git}"
+  if ! echo "$REPO_NAME" | grep -qE -- '-oracle$'; then
+    echo "BLOCKED: Never push directly to main. Use alpha branch + PR." >&2
+    exit 2
+  fi
 fi
 
 # Block git commit --amend (breaks multi-agent sync - causes hash divergence)

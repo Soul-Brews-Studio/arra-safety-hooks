@@ -13,7 +13,7 @@ Claude Code safety hooks — enforcement over documentation.
 | `git push --force` / `-f` / `--force-with-lease` | Nothing is Deleted |
 | `git reset --hard` | Irreversible |
 | `git commit --amend` | Breaks multi-agent hash sync |
-| `git push origin main` | Always branch + PR |
+| `git push origin main` | Always branch + PR (except repos ending in `-oracle`) |
 | `git checkout -- .` | Use `git stash` instead |
 | `git restore .` | Use `git stash` instead |
 | `git clean -f` | Deletes untracked files permanently |
