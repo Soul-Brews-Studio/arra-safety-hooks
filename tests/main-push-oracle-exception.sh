@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -u
+set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 HOOK="$REPO_ROOT/safety-check.sh"
@@ -13,11 +13,13 @@ assert_exit_code() {
   local repo_dir="$2"
   local label="$3"
   local actual
+  set +e
   (
     cd "$repo_dir" || exit 99
     printf '%s\n' '{"tool_input":{"command":"git push origin main"}}' | "$HOOK" >/dev/null 2>&1
   )
   actual=$?
+  set -e
   if [ "$actual" -ne "$expected" ]; then
     echo "FAIL: $label (expected $expected, got $actual)"
     failures=$((failures + 1))
@@ -26,6 +28,10 @@ assert_exit_code() {
   fi
 }
 
+if [ -z "$TMP_ROOT" ] || ! echo "$TMP_ROOT" | grep -qE '^/tmp/'; then
+  echo "Refusing to delete unexpected TMP_ROOT: '$TMP_ROOT'"
+  exit 1
+fi
 rm -rf "$TMP_ROOT"
 mkdir -p "$TMP_ROOT/non-oracle" "$TMP_ROOT/oracle" "$TMP_ROOT/no-origin"
 
