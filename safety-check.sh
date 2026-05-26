@@ -87,10 +87,16 @@ fi
 
 # Block direct push to main
 if echo "$CMD" | grep -qE 'git\s+push\s+(origin\s+)?main(\s|$)'; then
+  ALLOW_DIRECT_MAIN=false
   ORIGIN_URL=$(git config --get remote.origin.url 2>/dev/null || echo "")
-  REPO_NAME=$(basename "$ORIGIN_URL")
-  REPO_NAME="${REPO_NAME%.git}"
-  if ! echo "$REPO_NAME" | grep -qE -- '-oracle$'; then
+  if [ -n "$ORIGIN_URL" ]; then
+    REPO_NAME=$(basename "$ORIGIN_URL")
+    REPO_NAME="${REPO_NAME%.git}"
+    if echo "$REPO_NAME" | grep -qE -- '-oracle$'; then
+      ALLOW_DIRECT_MAIN=true
+    fi
+  fi
+  if ! $ALLOW_DIRECT_MAIN; then
     echo "BLOCKED: Never push directly to main. Use alpha branch + PR." >&2
     exit 2
   fi
