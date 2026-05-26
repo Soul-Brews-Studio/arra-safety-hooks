@@ -36,6 +36,8 @@ assert_exit_code 2 "$TMP_ROOT/non-oracle" "non-oracle repo blocks direct main pu
 git -C "$TMP_ROOT/oracle" init -q
 git -C "$TMP_ROOT/oracle" remote add origin git@github.com:Soul-Brews-Studio/xiaoer-oracle.git
 assert_exit_code 0 "$TMP_ROOT/oracle" "oracle SSH remote allows direct main push"
+git -C "$TMP_ROOT/oracle" remote set-url origin https://github.com/Soul-Brews-Studio/xiaoer-oracle.git
+assert_exit_code 0 "$TMP_ROOT/oracle" "oracle HTTPS remote allows direct main push"
 git -C "$TMP_ROOT/oracle" remote set-url origin https://github.com/Soul-Brews-Studio/xiaoer-oracle.git/
 assert_exit_code 0 "$TMP_ROOT/oracle" "oracle HTTPS trailing slash allows direct main push"
 
