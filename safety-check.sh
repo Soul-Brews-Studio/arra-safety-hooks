@@ -90,9 +90,11 @@ if echo "$CMD" | grep -qE 'git\s+push\s+(origin\s+)?main(\s|$)'; then
   ALLOW_DIRECT_MAIN=false
   ORIGIN_URL=$(git config --get remote.origin.url 2>/dev/null || echo "")
   if [ -n "$ORIGIN_URL" ]; then
-    REPO_NAME=$(basename "$ORIGIN_URL")
+    NORMALIZED_ORIGIN_URL="${ORIGIN_URL%%\?*}"
+    NORMALIZED_ORIGIN_URL="${NORMALIZED_ORIGIN_URL%/}"
+    REPO_NAME=$(basename "$NORMALIZED_ORIGIN_URL")
     REPO_NAME="${REPO_NAME%.git}"
-    if echo "$REPO_NAME" | grep -qE -- '-oracle$'; then
+    if [ -n "$REPO_NAME" ] && echo "$REPO_NAME" | grep -qE -- '-oracle$'; then
       ALLOW_DIRECT_MAIN=true
     fi
   fi
